@@ -27,13 +27,13 @@ for term in ["abc", "foo", "abs"]:
 assert trie.pattern() == "(?:ab[cs]|foo)"  # equivalent to but faster than "(?:abc|abs|foo)"
 
 trie.add("absolute")
-assert trie.pattern() == "(?:ab(?:c|s(?:olute))|foo)"
+assert trie.pattern() == "(?:ab(?:c|s(?:olute)?)|foo)"
 
 trie.add("abx")
-assert trie.pattern() == "(?:ab(?:[cx]|s(?:olute))|foo)"
+assert trie.pattern() == "(?:ab(?:[cx]|s(?:olute)?)|foo)"
 
 trie.add("abxy")
-assert trie.pattern() == "(?:ab(?:c|s(?:olute)|xy?)|foo)"
+assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
 ```
 
 
