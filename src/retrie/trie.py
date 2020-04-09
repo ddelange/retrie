@@ -70,6 +70,6 @@ class Trie:
             if not deeper:
                 result += "?"
             else:
-                result = "(?:" + result + ")"
+                result = "(?:" + result + ")?"
 
         return result

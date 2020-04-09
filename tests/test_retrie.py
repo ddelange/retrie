@@ -26,6 +26,22 @@ def test_Retrie():
     match = retrie.compile(word_boundary=r"\b").search("a foo bar")
     assert match.group(0) == "foo"
 
+    retrie.trie.add("absolute")
+
+    match = retrie.compile(word_boundary=r"\b").search("abs ")
+    assert match.group(0) == "abs"
+
+    match = retrie.compile(word_boundary=r"\b").search("abso absolute")
+    assert match.group(0) == "absolute"
+
+    retrie.trie.add("abcy")
+
+    match = retrie.compile(word_boundary=r"\b").search("abc")
+    assert match.group(0) == "abc"
+
+    match = retrie.compile(word_boundary="").search("abcyz")
+    assert match.group(0) == "abcy"
+
 
 def test_Blacklist():
     blacklist = Blacklist(["abc", "foo", "abs"], match_substrings=False)
