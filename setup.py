@@ -27,6 +27,7 @@ def read_readme(path):
 
 setup(
     name="retrie",
+    description="Efficient Trie-based regex unions for blacklist/whitelist filtering and one-pass mapping-based string replacing",
     long_description=read_readme(readme_path),
     long_description_content_type="text/markdown",
     setup_requires=["setuptools_scm"],
