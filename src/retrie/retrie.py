@@ -15,7 +15,7 @@ from . import cached_property, trie  # noqa:ABS101
 
 re_flag_type = Optional[int]
 
-DEFAULT_FLAGS = re.IGNORECASE | re.UNICODE
+DEFAULT_FLAGS = re.IGNORECASE | re.UNICODE  # on py3, re.UNICODE is always enabled
 WORD_BOUNDARY = r"\b"
 
 
@@ -23,7 +23,12 @@ def _lower_keys(
     mapping,  # type: Mapping[Text, Any]
 ):  # type: (...) -> Dict[Text, Any]
     """Convert all keys of mapping to lowercase."""
-    return dict(zip((k.lower() for k in mapping), mapping.values()))
+    out = {k.lower(): v for k, v in mapping.items()}
+    if len(out) < len(mapping):
+        raise ValueError(
+            "Ambiguous replacement_mapping: converting keys to lowercase yields duplicate keys"
+        )
+    return out
 
 
 class Retrie:
@@ -80,8 +85,12 @@ class Retrie:
         word_boundary = self.word_boundary if word_boundary is None else word_boundary
         re_flags = self.re_flags if re_flags == -1 else re_flags
 
-        lookbehind = "(?<=" + word_boundary + ")" if word_boundary else ""
-        lookahead = "(?=" + word_boundary + ")" if word_boundary else ""
+        if word_boundary == r"\b":
+            # \b is non-capturing, so doesn't need to be wrapped
+            lookbehind = lookahead = word_boundary
+        else:
+            lookbehind = "(?<=" + word_boundary + ")" if word_boundary else ""
+            lookahead = "(?=" + word_boundary + ")" if word_boundary else ""
 
         return re.compile(
             lookbehind + self.pattern() + lookahead,
