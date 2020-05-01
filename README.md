@@ -20,8 +20,6 @@ from retrie.trie import Trie
 
 trie = Trie()
 
-assert trie.pattern() == ""
-
 for term in ["abc", "foo", "abs"]:
     trie.add(term)
 assert trie.pattern() == "(?:ab[cs]|foo)"  # equivalent to but faster than "(?:abc|abs|foo)"
@@ -53,20 +51,23 @@ The following objects are all subclasses of [`retrie.retrie.Retrie`](src/retrie/
 
 #### Blacklist
 
-The `Blacklist` object can be used to filter out bad occurences in a test or a sequenxce of strings:
+The `Blacklist` object can be used to filter out bad occurences in a text or a sequenxce of strings:
 ```py
 from retrie.retrie import Blacklist
 
-blacklist = Blacklist(["abc", "foo", "abs"], match_substrings=False)
-blacklist.compiled  # re.compile(r'(?<=\b)(?:ab[cs]|foo)(?=\b)', re.IGNORECASE|re.UNICODE)
+# check out docstrings and methods
+help(Blacklist)
 
+blacklist = Blacklist(["abc", "foo", "abs"], match_substrings=False)
+blacklist.compiled
+# re.compile(r'(?<=\b)(?:ab[cs]|foo)(?=\b)', re.IGNORECASE|re.UNICODE)
 assert not blacklist.is_blacklisted("a foobar")
 assert tuple(blacklist.filter(("good", "abc", "foobar"))) == ("good", "foobar")
 assert blacklist.cleanse_text(("good abc foobar")) == "good  foobar"
 
 blacklist = Blacklist(["abc", "foo", "abs"], match_substrings=True)
-blacklist.compiled  # re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
-
+blacklist.compiled
+# re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
 assert blacklist.is_blacklisted("a foobar")
 assert tuple(blacklist.filter(("good", "abc", "foobar"))) == ("good",)
 assert blacklist.cleanse_text(("good abc foobar")) == "good  bar"
@@ -79,53 +80,54 @@ Similar methods are available for the `Whitelist` object:
 ```py
 from retrie.retrie import Whitelist
 
-whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=False)
-whitelist.compiled  # re.compile(r'(?<=\b)(?:ab[cs]|foo)(?=\b)', re.IGNORECASE|re.UNICODE)
+# check out docstrings and methods
+help(Whitelist)
 
+whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=False)
+whitelist.compiled
+# re.compile(r'(?<=\b)(?:ab[cs]|foo)(?=\b)', re.IGNORECASE|re.UNICODE)
 assert not whitelist.is_whitelisted("a foobar")
 assert tuple(whitelist.filter(("bad", "abc", "foobar"))) == ("abc",)
-assert whitelist.cleanse_text(("good abc foobar")) == "abc"
+assert whitelist.cleanse_text(("bad abc foobar")) == "abc"
 
 whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=True)
-whitelist.compiled  # re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
-
+whitelist.compiled
+# re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
 assert whitelist.is_whitelisted("a foobar")
 assert tuple(whitelist.filter(("bad", "abc", "foobar"))) == ("abc", "foobar")
-assert whitelist.cleanse_text(("good abc foobar")) == "abcfoo"
+assert whitelist.cleanse_text(("bad abc foobar")) == "abcfoo"
 ```
 
 
 #### Replacer
 
-The `Replacer` object can search & replace occurrences of `replacement_mapping.keys()` with corresponding values.
+The `Replacer` object does a fast single-pass search & replace for occurrences of `replacement_mapping.keys()` with corresponding values.
 ```py
 from retrie.retrie import Replacer
 
-replacer = Replacer(
-    replacement_mapping=dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-    match_substrings=True,
-)
-replacer.compiled  # re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
+# check out docstrings and methods
+help(Replacer)
+
+replacement_mapping = dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"]))
+
+replacer = Replacer(replacement_mapping, match_substrings=True)
+replacer.compiled
+# re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
 assert replacer.replace("ABS ...foo... foobar") == "new3 ...new2... new2bar"
 
-replacer = Replacer(
-    replacement_mapping=dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-    match_substrings=False,
-)
+replacer = Replacer(replacement_mapping, match_substrings=False)
+replacer.compiled
+# re.compile(r'\b(?:ab[cs]|foo)\b', re.IGNORECASE|re.UNICODE)
 assert replacer.replace("ABS ...foo... foobar") == "new3 ...new2... foobar"
 
-replacer = Replacer(
-    replacement_mapping=dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-    match_substrings=False,
-    re_flags=None,
-)
+replacer = Replacer(replacement_mapping, match_substrings=False, re_flags=None)
+replacer.compiled  # on py3, re.UNICODE is always enabled
+# re.compile(r'\b(?:ab[cs]|foo)\b')
 assert replacer.replace("ABS ...foo... foobar") == "ABS ...new2... foobar"
 
-replacer = Replacer(
-    replacement_mapping=dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-    match_substrings=False,
-    word_boundary=" ",
-)
+replacer = Replacer(replacement_mapping, match_substrings=False, word_boundary=" ")
+replacer.compiled
+# re.compile(r'(?<= )(?:ab[cs]|foo)(?= )', re.IGNORECASE|re.UNICODE)
 assert replacer.replace(". ABS ...foo... foobar") == ". new3 ...foo... foobar"
 ```
 

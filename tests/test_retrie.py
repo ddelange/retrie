@@ -1,3 +1,5 @@
+import pytest
+
 from retrie.retrie import Blacklist, Replacer, Retrie, Whitelist
 
 
@@ -59,37 +61,36 @@ def test_Whitelist():
     whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=False)
     assert not whitelist.is_whitelisted("a foobar")
     assert tuple(whitelist.filter(("bad", "abc", "foobar"))) == ("abc",)
-    assert whitelist.cleanse_text(("good abc foobar")) == "abc"
+    assert whitelist.cleanse_text(("bad abc foobar")) == "abc"
 
     whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=True)
     assert whitelist.is_whitelisted("a foobar")
     assert tuple(whitelist.filter(("bad", "abc", "foobar"))) == ("abc", "foobar")
-    assert whitelist.cleanse_text(("good abc foobar")) == "abcfoo"
+    assert whitelist.cleanse_text(("bad abc foobar")) == "abcfoo"
 
 
 def test_Replacer():
-    replacer = Replacer(
-        dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-        match_substrings=True,
-    )
+    replacement_mapping = dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"]))
+
+    replacer = Replacer(replacement_mapping, match_substrings=True)
     assert replacer.replace("ABS ...foo... foobar") == "new3 ...new2... new2bar"
 
-    replacer = Replacer(
-        dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-        match_substrings=False,
-    )
+    replacer = Replacer(replacement_mapping, match_substrings=False)
     assert replacer.replace("ABS ...foo... foobar") == "new3 ...new2... foobar"
 
-    replacer = Replacer(
-        dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-        match_substrings=False,
-        re_flags=None,
-    )
+    replacer = Replacer(replacement_mapping, match_substrings=False, re_flags=None)
     assert replacer.replace("ABS ...foo... foobar") == "ABS ...new2... foobar"
 
-    replacer = Replacer(
-        dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"])),
-        match_substrings=False,
-        word_boundary=" ",
-    )
+    replacer = Replacer(replacement_mapping, match_substrings=False, word_boundary=" ")
     assert replacer.replace(". ABS ...foo... foobar") == ". new3 ...foo... foobar"
+
+
+def test__lower_keys():
+    replacement_mapping = {"x": 0, "X": 1}
+
+    with pytest.raises(ValueError) as excinfo:
+        Replacer(replacement_mapping)  # re.IGNORECASE enabled by default
+    assert (
+        str(excinfo.value)
+        == "Ambiguous replacement_mapping: converting keys to lowercase yields duplicate keys"
+    )
