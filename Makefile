@@ -1,27 +1,22 @@
-clean:
-	find src -type d -name "__pycache__" -exec rm -rf {} + > /dev/null 2>&1
-	find src -type f -name "*.pyc" -exec rm -rf {} + > /dev/null 2>&1
-
-	find tests -type d -name "__pycache__" -exec rm -rf {} + > /dev/null 2>&1
-	find tests -type f -name "*.pyc" -exec rm -rf {} + > /dev/null 2>&1
-
+.PHONY: lint
+## Run linting
 lint:
-	flake8 --show-source src
-	isort --check-only -rc src --diff
+	pre-commit run --all-files
 
-	flake8 --show-source tests
-	isort --check-only -rc tests --diff
-
-	flake8 --show-source setup.py
-	isort --check-only setup.py --diff
-
+.PHONY: test
+## Run tests
 test:
-	mypy src/
 	python -m pytest tests/
 
+.PHONY: install
+## Install for development
 install:
 	pip install -r requirements/ci.txt
 	pip install -e .
-	pre-commit install
+	pre-commit install || true  # not installed on older python versions
 
-all: clean lint test
+.PHONY: help
+## Print Makefile documentation
+help:
+	@perl -0 -nle 'printf("%-25s - %s\n", "$$2", "$$1") while m/^##\s*([^\r\n]+)\n^([\w-]+):[^=]/gm' $(MAKEFILE_LIST) | sort
+.DEFAULT_GOAL := help

@@ -54,7 +54,8 @@ class Retrie:
 
     @classmethod
     def parse_re_flags(
-        cls, re_flags,  # type: re_flag_type
+        cls,
+        re_flags,  # type: re_flag_type
     ):  # type: (...) -> int
         return int(re_flags) if re_flags else 0
 
@@ -177,7 +178,8 @@ class Blacklist(Checklist):
         return self.is_listed(term)
 
     def filter(  # noqa:A003
-        self, sequence,  # type: Sequence[Text]
+        self,
+        sequence,  # type: Sequence[Text]
     ):  # type: (...) -> Iterator[Text]
         """Construct an iterator from those elements of sequence not blacklisted."""
         return filter(self.not_listed, sequence)
@@ -223,7 +225,8 @@ class Whitelist(Checklist):
         return self.is_listed(term)
 
     def filter(  # noqa:A003
-        self, sequence,  # type: Sequence[Text]
+        self,
+        sequence,  # type: Sequence[Text]
     ):  # type: (...) -> Iterator[Text]
         """Construct an iterator from whitelisted elements of sequence."""
         return filter(self.is_listed, sequence)
