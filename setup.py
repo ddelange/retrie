@@ -44,7 +44,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     author="ddelange",
-    author_email="david@delange.dev",
+    author_email="ddelange@delange.dev",
     url="https://github.com/ddelange/retrie",
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     classifiers=[
