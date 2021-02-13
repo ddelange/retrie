@@ -51,7 +51,7 @@ The following objects are all subclasses of [`retrie.retrie.Retrie`](src/retrie/
 
 #### Blacklist
 
-The `Blacklist` object can be used to filter out bad occurences in a text or a sequenxce of strings:
+The `Blacklist` object can be used to filter out bad occurences in a text or a sequence of strings:
 ```py
 from retrie.retrie import Blacklist
 
@@ -137,30 +137,4 @@ assert replacer.replace(". ABS ...foo... foobar") == ". new3 ...foo... foobar"
 [![gitmoji](https://img.shields.io/badge/gitmoji-%20%F0%9F%98%9C%20%F0%9F%98%8D-ffdd67)](https://github.com/carloscuesta/gitmoji-cli)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-Create a virtual environment.
-
-```sh
-python -m venv .venv
-source .venv/bin/activate
-```
-
-Get ready to develop:
-
-```sh
-make install
-```
-
-This is equivalent to the following steps:
-
-- Install pre-commit and other continous integration dependencies in order to make commits and run tests.
-    ```sh
-    pip install -r requirements/ci.txt
-    pre-commit install
-    ```
-
-- With requirements installed, `make lint` and `make test` can now be run. There is also `make clean`, and `make all` which runs all three.
-
-- To import the package in the python environment, install the package (`-e` for editable installation, upon import, python will read directly from the repository).
-    ```sh
-    pip install -e .
-    ```
+Run `make help` for options like installing for development, linting and testing.
