@@ -30,7 +30,10 @@ setup(
     description="Efficient Trie-based regex unions for blacklist/whitelist filtering and one-pass mapping-based string replacing",
     long_description=read_readme(readme_path),
     long_description_content_type="text/markdown",
-    setup_requires=["setuptools_scm"],
+    setup_requires=[
+        "setuptools_scm<6; python_version=='2.7'",
+        "setuptools_scm<7; python_version>'2.7'",
+    ],
     install_requires=read_requirements(requirements_path),
     use_scm_version={
         "version_scheme": "guess-next-dev",
