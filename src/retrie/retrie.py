@@ -123,8 +123,7 @@ class Checklist(Retrie):
 
         Retrie.__init__(self, word_boundary=word_boundary, re_flags=re_flags)
 
-        for term in keys:
-            self.trie.add(term)
+        self.trie.add(*keys)
 
     @cached_property
     def compiled(self):  # type: (...) -> Pattern[Text]
@@ -291,6 +290,6 @@ class Replacer(Checklist):
 
         Args:
             text (str): String to search & replace.
-            count (int): Amount of occurences to replace. If 0 or emitted, replace all.
+            count (int): Amount of occurences to replace. If 0 or omitted, replace all.
         """
         return self.compiled.sub(self._replace, text, count=count)
