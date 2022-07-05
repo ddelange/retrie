@@ -20,8 +20,7 @@ from retrie.trie import Trie
 
 trie = Trie()
 
-for term in ["abc", "foo", "abs"]:
-    trie.add(term)
+trie.add("abc", "foo", "abs")
 assert trie.pattern() == "(?:ab[cs]|foo)"  # equivalent to but faster than "(?:abc|abs|foo)"
 
 trie.add("absolute")

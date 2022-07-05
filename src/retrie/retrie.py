@@ -290,6 +290,6 @@ class Replacer(Checklist):
 
         Args:
             text (str): String to search & replace.
-            count (int): Amount of occurences to replace. If 0 or emitted, replace all.
+            count (int): Amount of occurences to replace. If 0 or omitted, replace all.
         """
         return self.compiled.sub(self._replace, text, count=count)
