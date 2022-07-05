@@ -123,8 +123,7 @@ class Checklist(Retrie):
 
         Retrie.__init__(self, word_boundary=word_boundary, re_flags=re_flags)
 
-        for term in keys:
-            self.trie.add(term)
+        self.trie.add(*keys)
 
     @cached_property
     def compiled(self):  # type: (...) -> Pattern[Text]

@@ -5,8 +5,7 @@ def test_Trie():
     trie = Trie()
     assert trie.pattern() == ""
 
-    for term in ["abc", "foo", "abs"]:
-        trie.add(term)
+    trie.add("abc", "foo", "abs")
     assert trie.pattern() == "(?:ab[cs]|foo)"
 
     trie.add("absolute")

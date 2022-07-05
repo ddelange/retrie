@@ -17,13 +17,14 @@ class Trie:
     def __init__(self):
         self.data = {}  # type: data_type
 
-    def add(self, word):
-        """Add a word to the current Trie."""
-        ref = self.data
-        for char in word:
-            ref[char] = ref.get(char, {})
-            ref = ref[char]
-        ref[""] = 1
+    def add(self, *word):
+        """Add one or more words to the current Trie."""
+        for word in word:
+            ref = self.data
+            for char in word:
+                ref[char] = ref.get(char, {})
+                ref = ref[char]
+            ref[""] = 1
 
     def dump(self):  # type: (...) -> data_type
         """Dump the current trie as dictionary."""
