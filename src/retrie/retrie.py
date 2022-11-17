@@ -42,7 +42,7 @@ class Retrie:
         """Initialize Trie and set regex config.
 
         Note:
-            Although the Trie is case-sensitive, by defailt re.IGNORECASE is used.
+            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
 
         Args:
             word_boundary (str): Token to wrap the retrie to exclude certain matches.
@@ -110,7 +110,7 @@ class Checklist(Retrie):
         """Check and mutate strings against a Retrie.
 
         Note:
-            Although the Trie is case-sensitive, by defailt re.IGNORECASE is used.
+            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
 
         Args:
             keys (Sequence): Strings to build the Retrie from.
@@ -154,7 +154,7 @@ class Blacklist(Checklist):
         """Mutate [sequences of] strings based on their match against blacklisted.
 
         Note:
-            Although the Trie is case-sensitive, by defailt re.IGNORECASE is used.
+            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
 
         Args:
             blacklisted (Sequence): Strings to build the Retrie from.
@@ -201,7 +201,7 @@ class Whitelist(Checklist):
         """Mutate [sequences of] strings based on their match against whitelisted.
 
         Note:
-            Although the Trie is case-sensitive, by defailt re.IGNORECASE is used.
+            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
 
         Args:
             whitelisted (Sequence): Strings to build the Retrie from.
@@ -250,7 +250,7 @@ class Replacer(Checklist):
         """Replace occurrences of replacement_mapping.keys() with corresponding values.
 
         Note:
-            Although the Trie is case-sensitive, by defailt re.IGNORECASE is used.
+            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
 
         Args:
             replacement_mapping (Mapping): Mapping {old: new} to replace.
