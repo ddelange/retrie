@@ -6,7 +6,7 @@ lint:
 .PHONY: test
 ## Run tests
 test:
-	python -m pytest
+	python -m pytest tests/
 
 .PHONY: showcov
 ## Open the test coverage overview using the default HTML viewer
