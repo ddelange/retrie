@@ -8,12 +8,26 @@ lint:
 test:
 	python -m pytest tests/
 
+.PHONY: showcov
+## Open the test coverage overview using the default HTML viewer
+showcov:
+	xdg-open htmlcov/index.html || open htmlcov/index.html
+
 .PHONY: install
-## Install for development
+## Install this repo, plus dev requirements, in editable mode
 install:
-	pip install -r requirements/ci.txt
-	pip install -e .
+	pip install -r requirements/ci.txt -r requirements/docs.txt -e .
 	pre-commit install || true  # not installed on older python versions
+
+.PHONY: builddocs
+## Build documentation using Sphinx
+builddocs:
+	cd docs && make docs
+
+.PHONY: showdocs
+## Open the docs using the default HTML viewer
+showdocs:
+	xdg-open docs/_build/html/index.html || open docs/_build/html/index.html
 
 .PHONY: help
 ## Print Makefile documentation

@@ -1,3 +1,80 @@
+"""Submodule containing the :class:`Retrie` class, which handles filling the Trie and compiling the corresponding regex pattern, and its high-level wrappers.
+
+The :class:`Blacklist` class can be used to filter out bad occurences in a text or a sequence of strings:
+::
+
+    from retrie.retrie import Blacklist
+
+    # check out docstrings and methods
+    help(Blacklist)
+
+    blacklist = Blacklist(["abc", "foo", "abs"], match_substrings=False)
+    blacklist.compiled
+    # re.compile(r'(?<=\b)(?:ab[cs]|foo)(?=\b)', re.IGNORECASE|re.UNICODE)
+    assert not blacklist.is_blacklisted("a foobar")
+    assert tuple(blacklist.filter(("good", "abc", "foobar"))) == ("good", "foobar")
+    assert blacklist.cleanse_text(("good abc foobar")) == "good  foobar"
+
+    blacklist = Blacklist(["abc", "foo", "abs"], match_substrings=True)
+    blacklist.compiled
+    # re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
+    assert blacklist.is_blacklisted("a foobar")
+    assert tuple(blacklist.filter(("good", "abc", "foobar"))) == ("good",)
+    assert blacklist.cleanse_text(("good abc foobar")) == "good  bar"
+
+
+Similar methods are available for the :class:`Whitelist` class:
+::
+
+    from retrie.retrie import Whitelist
+
+    # check out docstrings and methods
+    help(Whitelist)
+
+    whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=False)
+    whitelist.compiled
+    # re.compile(r'(?<=\b)(?:ab[cs]|foo)(?=\b)', re.IGNORECASE|re.UNICODE)
+    assert not whitelist.is_whitelisted("a foobar")
+    assert tuple(whitelist.filter(("bad", "abc", "foobar"))) == ("abc",)
+    assert whitelist.cleanse_text(("bad abc foobar")) == "abc"
+
+    whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=True)
+    whitelist.compiled
+    # re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
+    assert whitelist.is_whitelisted("a foobar")
+    assert tuple(whitelist.filter(("bad", "abc", "foobar"))) == ("abc", "foobar")
+    assert whitelist.cleanse_text(("bad abc foobar")) == "abcfoo"
+
+The :class:`Replacer` class does a fast single-pass search & replace for occurrences of ``replacement_mapping.keys()`` with corresponding values.
+::
+
+    from retrie.retrie import Replacer
+
+    # check out docstrings and methods
+    help(Replacer)
+
+    replacement_mapping = dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"]))
+
+    replacer = Replacer(replacement_mapping, match_substrings=True)
+    replacer.compiled
+    # re.compile(r'(?:ab[cs]|foo)', re.IGNORECASE|re.UNICODE)
+    assert replacer.replace("ABS ...foo... foobar") == "new3 ...new2... new2bar"
+
+    replacer = Replacer(replacement_mapping, match_substrings=False)
+    replacer.compiled
+    # re.compile(r'\b(?:ab[cs]|foo)\b', re.IGNORECASE|re.UNICODE)
+    assert replacer.replace("ABS ...foo... foobar") == "new3 ...new2... foobar"
+
+    replacer = Replacer(replacement_mapping, match_substrings=False, re_flags=None)
+    replacer.compiled  # on py3, re.UNICODE is always enabled
+    # re.compile(r'\b(?:ab[cs]|foo)\b')
+    assert replacer.replace("ABS ...foo... foobar") == "ABS ...new2... foobar"
+
+    replacer = Replacer(replacement_mapping, match_substrings=False, word_boundary=" ")
+    replacer.compiled
+    # re.compile(r'(?<= )(?:ab[cs]|foo)(?= )', re.IGNORECASE|re.UNICODE)
+    assert replacer.replace(". ABS ...foo... foobar") == ". new3 ...foo... foobar"
+"""
 import re
 from typing import (
     Any,
@@ -32,6 +109,16 @@ def _lower_keys(
 
 
 class Retrie:
+    """Wrap a :class:`retrie.trie.Trie` to compile the corresponding regex pattern with word boundary and regex flags.
+
+    Note:
+        Although the Trie is case-sensitive, by default :obj:`re.IGNORECASE` is used for better performance. Pass ``re_flags=None`` to perform case-sensitive replacements.
+
+    Args:
+        word_boundary (str): Token to wrap the retrie to exclude certain matches.
+        re_flags (re.RegexFlag): Flags passed to regex engine.
+    """
+
     __slots__ = "trie", "word_boundary", "re_flags"
 
     def __init__(
@@ -39,24 +126,20 @@ class Retrie:
         word_boundary=WORD_BOUNDARY,  # type: Text
         re_flags=DEFAULT_FLAGS,  # type: re_flag_type
     ):  # type: (...) -> None
-        """Initialize Trie and set regex config.
-
-        Note:
-            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
-
-        Args:
-            word_boundary (str): Token to wrap the retrie to exclude certain matches.
-            re_flags (re.RegexFlag): Flags passed to regex engine.
-        """
+        """Initialize :class:`retrie.trie.Trie` and set config."""
         self.trie = trie.Trie()
+        """The underlying :class:`retrie.trie.Trie`."""
         self.word_boundary = word_boundary or ""
+        """The boundary token to wrap the :class:`retrie.trie.Trie` pattern in."""
         self.re_flags = self.parse_re_flags(re_flags)
+        """Regex flags passed to :func:`re.compile`."""
 
     @classmethod
     def parse_re_flags(
         cls,
         re_flags,  # type: re_flag_type
     ):  # type: (...) -> int
+        """Convert re_flags to integer."""
         return int(re_flags) if re_flags else 0
 
     def pattern(self):  # type: (...) -> Text
@@ -72,7 +155,7 @@ class Retrie:
         word_boundary=None,  # type: Optional[Text]
         re_flags=-1,  # type: re_flag_type
     ):  # type: (...) -> Pattern[Text]
-        """Compile re.Pattern for the current Trie.
+        """Compile a :class:`re.Pattern` for the current Trie.
 
         Optionally the following args can be passed to temporarily override class attrs.
 
@@ -100,6 +183,18 @@ class Retrie:
 
 
 class Checklist(Retrie):
+    """Check and mutate strings against a Retrie.
+
+    Note:
+        Although the Trie is case-sensitive, by default :obj:`re.IGNORECASE` is used for better performance. Pass ``re_flags=None`` to perform case-sensitive replacements.
+
+    Args:
+        keys (Sequence): Strings to build the Retrie from.
+        match_substrings (bool): Wether or not to override word_boundary with "".
+        word_boundary (str): Token to wrap the retrie to exclude certain matches.
+        re_flags (re.RegexFlag): Flags passed to regex engine.
+    """
+
     def __init__(
         self,
         keys,  # type: Sequence[Text]
@@ -107,17 +202,7 @@ class Checklist(Retrie):
         word_boundary=WORD_BOUNDARY,  # type: Text
         re_flags=DEFAULT_FLAGS,  # type: re_flag_type
     ):  # type: (...) -> None
-        """Check and mutate strings against a Retrie.
-
-        Note:
-            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
-
-        Args:
-            keys (Sequence): Strings to build the Retrie from.
-            match_substrings (bool): Wether or not to override word_boundary with "".
-            word_boundary (str): Token to wrap the retrie to exclude certain matches.
-            re_flags (re.RegexFlag): Flags passed to regex engine.
-        """
+        """Initialize :class:`retrie.trie.Trie` and set config."""
         if match_substrings:
             word_boundary = ""
 
@@ -144,6 +229,18 @@ class Checklist(Retrie):
 
 
 class Blacklist(Checklist):
+    """Mutate [sequences of] strings based on their match against blacklisted.
+
+    Note:
+        Although the Trie is case-sensitive, by default :obj:`re.IGNORECASE` is used for better performance. Pass ``re_flags=None`` to perform case-sensitive replacements.
+
+    Args:
+        blacklisted (Sequence): Strings to build the Retrie from.
+        match_substrings (bool): Wether or not to override word_boundary with "".
+        word_boundary (str): Token to wrap the retrie to exclude certain matches.
+        re_flags (re.RegexFlag): Flags passed to regex engine.
+    """
+
     def __init__(
         self,
         blacklisted,  # type: Sequence[Text]
@@ -151,17 +248,7 @@ class Blacklist(Checklist):
         word_boundary=WORD_BOUNDARY,  # type: Text
         re_flags=DEFAULT_FLAGS,  # type: re_flag_type
     ):
-        """Mutate [sequences of] strings based on their match against blacklisted.
-
-        Note:
-            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
-
-        Args:
-            blacklisted (Sequence): Strings to build the Retrie from.
-            match_substrings (bool): Wether or not to override word_boundary with "".
-            word_boundary (str): Token to wrap the retrie to exclude certain matches.
-            re_flags (re.RegexFlag): Flags passed to regex engine.
-        """
+        """Initialize :class:`retrie.trie.Trie` and set config."""
         Checklist.__init__(
             self,
             keys=blacklisted,
@@ -191,6 +278,18 @@ class Blacklist(Checklist):
 
 
 class Whitelist(Checklist):
+    """Mutate [sequences of] strings based on their match against whitelisted.
+
+    Note:
+        Although the Trie is case-sensitive, by default :obj:`re.IGNORECASE` is used for better performance. Pass ``re_flags=None`` to perform case-sensitive replacements.
+
+    Args:
+        whitelisted (Sequence): Strings to build the Retrie from.
+        match_substrings (bool): Wether or not to override word_boundary with "".
+        word_boundary (str): Token to wrap the retrie to exclude certain matches.
+        re_flags (re.RegexFlag): Flags passed to regex engine.
+    """
+
     def __init__(
         self,
         whitelisted,  # type: Sequence[Text]
@@ -198,17 +297,7 @@ class Whitelist(Checklist):
         word_boundary=WORD_BOUNDARY,  # type: Text
         re_flags=DEFAULT_FLAGS,  # type: re_flag_type
     ):
-        """Mutate [sequences of] strings based on their match against whitelisted.
-
-        Note:
-            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
-
-        Args:
-            whitelisted (Sequence): Strings to build the Retrie from.
-            match_substrings (bool): Wether or not to override word_boundary with "".
-            word_boundary (str): Token to wrap the retrie to exclude certain matches.
-            re_flags (re.RegexFlag): Flags passed to regex engine.
-        """
+        """Initialize :class:`retrie.trie.Trie` and set config."""
         Checklist.__init__(
             self,
             keys=whitelisted,
@@ -238,6 +327,18 @@ class Whitelist(Checklist):
 
 
 class Replacer(Checklist):
+    """Replace occurrences of ``replacement_mapping.keys()`` with corresponding values.
+
+    Note:
+        Although the Trie is case-sensitive, by default :obj:`re.IGNORECASE` is used for better performance. Pass ``re_flags=None`` to perform case-sensitive replacements.
+
+    Args:
+        replacement_mapping (Mapping): Mapping ``{old: new}`` to replace.
+        match_substrings (bool): Wether or not to override word_boundary with "".
+        word_boundary (str): Token to wrap the retrie to exclude certain matches.
+        re_flags (re.RegexFlag): Flags passed to regex engine.
+    """
+
     __slots__ = "replacement_mapping"
 
     def __init__(
@@ -247,17 +348,7 @@ class Replacer(Checklist):
         word_boundary=WORD_BOUNDARY,  # type: Text
         re_flags=DEFAULT_FLAGS,  # type: re_flag_type
     ):
-        """Replace occurrences of replacement_mapping.keys() with corresponding values.
-
-        Note:
-            Although the Trie is case-sensitive, by default re.IGNORECASE is used.
-
-        Args:
-            replacement_mapping (Mapping): Mapping {old: new} to replace.
-            match_substrings (bool): Wether or not to override word_boundary with "".
-            word_boundary (str): Token to wrap the retrie to exclude certain matches.
-            re_flags (re.RegexFlag): Flags passed to regex engine.
-        """
+        """Initialize :class:`retrie.trie.Trie` and set config."""
         Checklist.__init__(
             self,
             keys=tuple(replacement_mapping.keys()),
@@ -291,5 +382,8 @@ class Replacer(Checklist):
         Args:
             text (str): String to search & replace.
             count (int): Amount of occurences to replace. If 0 or omitted, replace all.
+
+        Returns:
+            str: String with matches replaced.
         """
         return self.compiled.sub(self._replace, text, count=count)

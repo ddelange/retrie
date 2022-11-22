@@ -1,7 +1,7 @@
 from retrie.trie import Trie
 
 
-def test_Trie():
+def test_trie():
     trie = Trie()
     assert trie.pattern() == ""
 
