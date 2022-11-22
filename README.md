@@ -45,7 +45,11 @@ $ pip install retrie
 
 ## Usage
 
-The following objects are all subclasses of [`retrie.retrie.Retrie`](src/retrie/retrie.py), which handles filling the Trie and compiling the corresponding regex pattern.
+[![readthedocs](https://readthedocs.org/projects/retrie/badge/?version=latest)](https://retrie.readthedocs.io)
+
+For documentation, see [retrie.readthedocs.io](https://retrie.readthedocs.io/en/stable/_code_reference/retrie.html).
+
+The following objects are all subclasses of `retrie.retrie.Retrie`, which handles filling the Trie and compiling the corresponding regex pattern.
 
 
 #### Blacklist

@@ -1,7 +1,28 @@
-import re
-from typing import Dict, Optional, Text, Union
+"""Submodule containing code to build a regex pattern from a trie of strings.
 
-data_type = Dict[Text, Union[int, Dict]]
+Standalone usage:
+::
+
+    from retrie.trie import Trie
+
+    trie = Trie()
+
+    trie.add("abc", "foo", "abs")
+    assert trie.pattern() == "(?:ab[cs]|foo)"  # equivalent to but faster than "(?:abc|abs|foo)"
+
+    trie.add("absolute")
+    assert trie.pattern() == "(?:ab(?:c|s(?:olute)?)|foo)"
+
+    trie.add("abx")
+    assert trie.pattern() == "(?:ab(?:[cx]|s(?:olute)?)|foo)"
+
+    trie.add("abxy")
+    assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
+"""
+import re
+from typing import Dict, Optional, Text
+
+data_type = Dict[Text, Dict]
 
 
 class Trie:
@@ -15,16 +36,19 @@ class Trie:
     __slots__ = "data"
 
     def __init__(self):
+        """Initialize data dictionary."""
         self.data = {}  # type: data_type
 
-    def add(self, *word):
+    def add(
+        self, *word  # type: Text
+    ):
         """Add one or more words to the current Trie."""
         for word in word:
             ref = self.data
             for char in word:
                 ref[char] = ref.get(char, {})
                 ref = ref[char]
-            ref[""] = 1
+            ref[""] = {}
 
     def dump(self):  # type: (...) -> data_type
         """Dump the current trie as dictionary."""
@@ -35,7 +59,9 @@ class Trie:
         return self._pattern(self.dump()) or ""
 
     @classmethod
-    def _pattern(cls, data):  # type: (...) -> Optional[Text]
+    def _pattern(  # noqa: CCR001
+        cls, data  # type: Dict
+    ):  # type: (...) -> Optional[Text]
         """Build regex string from Trie."""
         if not data or len(data) == 1 and "" in data:
             return None
@@ -44,7 +70,7 @@ class Trie:
         current = []
         leaf_reached = False
         for char in sorted(data):
-            if data[char] == 1:
+            if char == "":
                 leaf_reached = True
                 continue
 

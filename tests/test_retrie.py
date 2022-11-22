@@ -3,10 +3,9 @@ import pytest
 from retrie.retrie import Blacklist, Replacer, Retrie, Whitelist
 
 
-def test_Retrie():
+def test_retrie():
     retrie = Retrie()
-    for term in ["abc", "foo", "abs"]:
-        retrie.trie.add(term)
+    retrie.trie.add("abc", "foo", "abs")
 
     assert retrie.pattern() == "(?:ab[cs]|foo)"
 
@@ -45,7 +44,7 @@ def test_Retrie():
     assert match.group(0) == "abcy"
 
 
-def test_Blacklist():
+def test_blacklist():
     blacklist = Blacklist(["abc", "foo", "abs"], match_substrings=False)
     assert not blacklist.is_blacklisted("a foobar")
     assert tuple(blacklist.filter(("good", "abc", "foobar"))) == ("good", "foobar")
@@ -57,7 +56,7 @@ def test_Blacklist():
     assert blacklist.cleanse_text(("good abc foobar")) == "good  bar"
 
 
-def test_Whitelist():
+def test_whitelist():
     whitelist = Whitelist(["abc", "foo", "abs"], match_substrings=False)
     assert not whitelist.is_whitelisted("a foobar")
     assert tuple(whitelist.filter(("bad", "abc", "foobar"))) == ("abc",)
@@ -69,7 +68,7 @@ def test_Whitelist():
     assert whitelist.cleanse_text(("bad abc foobar")) == "abcfoo"
 
 
-def test_Replacer():
+def test_replacer():
     replacement_mapping = dict(zip(["abc", "foo", "abs"], ["new1", "new2", "new3"]))
 
     replacer = Replacer(replacement_mapping, match_substrings=True)
@@ -88,7 +87,7 @@ def test_Replacer():
 def test__lower_keys():
     replacement_mapping = {"x": 0, "X": 1}
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ValueError, match="Ambiguous replacement_mapping") as excinfo:
         Replacer(replacement_mapping)  # re.IGNORECASE enabled by default
     assert (
         str(excinfo.value)
