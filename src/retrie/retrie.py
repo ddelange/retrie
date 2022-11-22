@@ -190,7 +190,7 @@ class Checklist(Retrie):
 
     Args:
         keys (Sequence): Strings to build the Retrie from.
-        match_substrings (bool): Wether or not to override word_boundary with "".
+        match_substrings (bool): Whether to override word_boundary with ``""``.
         word_boundary (str): Token to wrap the retrie to exclude certain matches.
         re_flags (re.RegexFlag): Flags passed to regex engine.
     """
@@ -236,7 +236,7 @@ class Blacklist(Checklist):
 
     Args:
         blacklisted (Sequence): Strings to build the Retrie from.
-        match_substrings (bool): Wether or not to override word_boundary with "".
+        match_substrings (bool): Whether to override word_boundary with ``""``.
         word_boundary (str): Token to wrap the retrie to exclude certain matches.
         re_flags (re.RegexFlag): Flags passed to regex engine.
     """
@@ -285,7 +285,7 @@ class Whitelist(Checklist):
 
     Args:
         whitelisted (Sequence): Strings to build the Retrie from.
-        match_substrings (bool): Wether or not to override word_boundary with "".
+        match_substrings (bool): Whether to override word_boundary with ``""``.
         word_boundary (str): Token to wrap the retrie to exclude certain matches.
         re_flags (re.RegexFlag): Flags passed to regex engine.
     """
@@ -334,7 +334,7 @@ class Replacer(Checklist):
 
     Args:
         replacement_mapping (Mapping): Mapping ``{old: new}`` to replace.
-        match_substrings (bool): Wether or not to override word_boundary with "".
+        match_substrings (bool): Whether to override word_boundary with ``""``.
         word_boundary (str): Token to wrap the retrie to exclude certain matches.
         re_flags (re.RegexFlag): Flags passed to regex engine.
     """
