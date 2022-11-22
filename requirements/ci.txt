@@ -1,5 +1,5 @@
-detect-secrets~=1.4.0
-mypy~=0.782
+detect-secrets~=1.4.0 ; python_version >= "3.6"
+mypy~=0.782 ; python_version >= "3.6"
 pre-commit~=2.9 ; python_version >= "3.6"
 pytest~=4.6  # pytest 5 requires py3
 pytest-cov~=2.8
