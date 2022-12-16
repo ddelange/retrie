@@ -1,6 +1,6 @@
 # retrie
 
-[![build](https://img.shields.io/github/workflow/status/ddelange/retrie/GH/master?logo=github&cacheSeconds=86400)](https://github.com/ddelange/retrie/actions?query=branch%3Amaster)
+[![build](https://img.shields.io/github/actions/workflow/status/ddelange/retrie/main.yml?branch=master&logo=github&cacheSeconds=86400)](https://github.com/ddelange/retrie/actions?query=branch%3Amaster)
 [![codecov](https://img.shields.io/codecov/c/github/ddelange/retrie/master?logo=codecov&logoColor=white)](https://codecov.io/gh/ddelange/retrie)
 [![pypi Version](https://img.shields.io/pypi/v/retrie.svg?logo=pypi&logoColor=white)](https://pypi.org/project/retrie/)
 [![python](https://img.shields.io/pypi/pyversions/retrie.svg?logo=python&logoColor=white)](https://pypi.org/project/retrie/)
