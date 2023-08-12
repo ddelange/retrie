@@ -20,7 +20,7 @@ Standalone usage:
     assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
 """
 import re
-from typing import Dict, Optional, Text
+from typing import Dict, Optional, Text  # noqa:F401
 
 data_type = Dict[Text, Dict]
 
