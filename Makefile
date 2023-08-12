@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: lint
 ## Run linting
 lint:
@@ -29,8 +31,8 @@ builddocs:
 showdocs:
 	xdg-open docs/_build/html/index.html || open docs/_build/html/index.html
 
+.DEFAULT_GOAL := help
 .PHONY: help
 ## Print Makefile documentation
 help:
-	@perl -0 -nle 'printf("%-25s - %s\n", "$$2", "$$1") while m/^##\s*([^\r\n]+)\n^([\w-]+):[^=]/gm' $(MAKEFILE_LIST) | sort
-.DEFAULT_GOAL := help
+	@perl -0 -nle 'printf("\033[36m  %-15s\033[0m %s\n", "$$2", "$$1") while m/^##\s*([^\r\n]+)\n^([\w.-]+):[^=]/gm' $(MAKEFILE_LIST) | sort

@@ -4,4 +4,3 @@ pre-commit~=2.9 ; python_version >= "3.6"
 pytest
 pytest-cov~=2.8
 pytest-env~=0.6
-pytest-sugar~=0.9
