@@ -76,7 +76,7 @@ The :class:`Replacer` class does a fast single-pass search & replace for occurre
     assert replacer.replace(". ABS ...foo... foobar") == ". new3 ...foo... foobar"
 """
 import re
-from typing import (
+from typing import (  # noqa:F401
     Any,
     Dict,
     Iterator,
