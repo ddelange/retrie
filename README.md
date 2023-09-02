@@ -4,7 +4,7 @@
 [![codecov](https://img.shields.io/codecov/c/github/ddelange/retrie/master?logo=codecov&logoColor=white)](https://codecov.io/gh/ddelange/retrie)
 [![pypi Version](https://img.shields.io/pypi/v/retrie.svg?logo=pypi&logoColor=white)](https://pypi.org/project/retrie/)
 [![python](https://img.shields.io/pypi/pyversions/retrie.svg?logo=python&logoColor=white)](https://pypi.org/project/retrie/)
-[![downloads](https://pepy.tech/badge/retrie)](https://pypistats.org/packages/retrie)
+[![downloads](https://static.pepy.tech/badge/retrie)](https://pypistats.org/packages/retrie)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 
