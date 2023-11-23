@@ -74,6 +74,7 @@ repos:
     -   id: interrogate
         pass_filenames: false
         args: [-c, setup.cfg]
+        additional_dependencies: ['setuptools']  # setuptools for pkg_resources for python 3.12
 
 -   repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.27.1

@@ -115,7 +115,7 @@ def setup(app):
 def linkcode_resolve(  # noqa:CCR001
     domain,
     info,
-    blob_url=f"{project_url.rstrip('/')}/blob",
+    blob_url=f'{project_url.rstrip("/")}/blob',
     default_branch="master",  # branch used for untagged 'latest' builds on readthedocs
     tag_prefix="",  # could be for instance "v" depending on tagging convention
 ):
