@@ -3,7 +3,7 @@ name: GH
 on:
   pull_request:
   push:
-    branches: master
+    branches: [master]
   release:
     types: [released, prereleased]
   workflow_dispatch:  # allows running workflow manually from the Actions tab
@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ['2.7', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['2.7', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -35,7 +35,7 @@ jobs:
         sudo ln -sf "$(which python2.7)" "$(dirname $(which python2.7))/python"
 
     - name: Pip cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements/*.txt') }}
@@ -43,7 +43,7 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Pre-commit cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit-${{ matrix.python-version }}-${{ hashFiles('**/requirements/ci.txt') }}-${{ hashFiles('.pre-commit-config.yaml') }}
@@ -56,14 +56,14 @@ jobs:
         make install
 
     - name: Lint
-      if: matrix.python-version == 3.11
+      if: matrix.python-version == 3.12
       run: make lint
 
     - name: Test
       run: make test
 
     - name: Docs
-      if: matrix.python-version == 3.11
+      if: matrix.python-version == 3.12
       run: SPHINXOPTS=-W make builddocs
 
     - name: Codecov
@@ -73,28 +73,35 @@ jobs:
         codecov
 
   CD:
-    needs: CI
+    needs: [CI]
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # softprops/action-gh-release
+      id-token: write  # pypa/gh-action-pypi-publish
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.x
 
     - name: Build
       run: |
-        pip install -U pip setuptools wheel twine
+        pip install -U pip setuptools wheel
         python setup.py sdist bdist_wheel --universal
 
-    - name: Publish
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USER }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        twine upload dist/*
+    - name: Upload release assets
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+        files: dist/*
+
+    # https://github.com/pypa/gh-action-pypi-publish#trusted-publishing
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@v1.8.10
 
     - uses: apexskier/github-release-commenter@v1
       with:
