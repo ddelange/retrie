@@ -35,6 +35,7 @@ and `+=` operators and will compare equal if their data dictionaries are equal.
         == Trie().add("abc").add("foo")
     )
 """
+
 import re
 from typing import Any, Dict, Optional, Text  # noqa:F401
 
@@ -72,7 +73,9 @@ class Trie:
         """Merge two Trie objects."""
         if not isinstance(other, Trie):
             raise TypeError(
-                f"Unsupported operand type(s) for +: '{type(self)}' and '{type(other)}'"
+                "Unsupported operand type(s) for +: '{0}' and '{1}'".format(
+                    type(self), type(other)
+                )
             )
 
         trie = Trie()
