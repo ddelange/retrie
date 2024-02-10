@@ -50,6 +50,51 @@ class Trie:
             return False
         return self.data == other.data
 
+    def __add__(
+        self, other  # type: "Trie"
+    ):  # type: (...) -> "Trie"
+        """Merge two Trie objects."""
+        if not isinstance(other, Trie):
+            raise TypeError(
+                f"Unsupported operand type(s) for +: '{type(self)}' and '{type(other)}'"
+            )
+
+        trie = Trie()
+        trie.data = self._merge(self.data, other.data)
+        return trie
+
+    def __iadd__(
+        self,
+        other,  # type: "Trie"
+    ):  # type: (...) -> "Trie"
+        """Merge another Trie object into the current Trie."""
+        if not isinstance(other, Trie):
+            raise TypeError(
+                f"Unsupported operand type(s) for +=: '{type(self)}' and '{type(other)}'"
+            )
+        return self + other
+
+    @classmethod
+    def _merge(
+        cls,
+        data1,  # type: data_type
+        data2,  # type: data_type
+    ):  # type: (...) -> data_type
+        """Merge two Trie data."""
+        merged = {}
+
+        for key, value in data1.items():
+            if key not in data2:
+                merged[key] = value
+            else:
+                merged[key] = cls._merge(value, data2[key])
+
+        for key, value in data2.items():
+            if key not in data1:
+                merged[key] = value
+
+        return merged
+
     def add(
         self, *word  # type: Text
     ):  # type: (...) -> "Trie"
