@@ -35,9 +35,12 @@ class Trie:
 
     __slots__ = "data"
 
-    def __init__(self):
+    def __init__(
+        self, *word  # type: Text
+    ):
         """Initialize data dictionary."""
         self.data = {}  # type: data_type
+        self.add(*word)
 
     def add(
         self, *word  # type: Text
