@@ -71,16 +71,10 @@ class Trie:
         self, other  # type: "Trie"
     ):  # type: (...) -> "Trie"
         """Merge two Trie objects."""
-        if not isinstance(other, Trie):
-            raise TypeError(
-                "Unsupported operand type(s) for +: '{0}' and '{1}'".format(
-                    type(self), type(other)
-                )
-            )
-
-        trie = Trie()
-        trie.data = self._merge(self.data, other.data)
-        return trie
+        new_trie = Trie()
+        new_trie += self
+        new_trie += other
+        return new_trie
 
     def __iadd__(
         self,
@@ -93,28 +87,31 @@ class Trie:
                     type(self), type(other)
                 )
             )
-        return self + other
+        self._merge(other)
+        return self
 
-    @classmethod
     def _merge(
-        cls,
-        data1,  # type: data_type
-        data2,  # type: data_type
-    ):  # type: (...) -> data_type
+        self,
+        other,  # type: "Trie"
+    ):  # type: (...) -> None
         """Merge two Trie data."""
-        merged = {}
-
-        for key, value in data1.items():
-            if key not in data2:
-                merged[key] = value
+        for key, value in other.data.items():
+            if key in self.data:
+                self._merge_subtrie(self.data[key], value)
             else:
-                merged[key] = cls._merge(value, data2[key])
+                self.data[key] = value
 
-        for key, value in data2.items():
-            if key not in data1:
-                merged[key] = value
-
-        return merged
+    def _merge_subtrie(
+        self,
+        current_subtrie,  # type: data_type
+        other_subtrie,  # type: data_type
+    ):  # type: (...) -> None
+        """Recursively merge subtrie data."""
+        for key, value in other_subtrie.items():
+            if key in current_subtrie:
+                self._merge_subtrie(current_subtrie[key], value)
+            else:
+                current_subtrie[key] = value
 
     def add(
         self, *word  # type: Text
