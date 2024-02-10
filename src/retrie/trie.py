@@ -43,6 +43,9 @@ class Trie:
         self, *word  # type: Text
     ):
         """Add one or more words to the current Trie."""
+        if len(word) == 1 and not isinstance(word[0], str):
+            word = word[0]
+
         for word in word:
             ref = self.data
             for char in word:
