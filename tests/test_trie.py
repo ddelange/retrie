@@ -22,3 +22,15 @@ def test_trie():
 
     trie.add("fo")
     assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|fo[eo]?)"
+
+    trie = Trie()
+    trie += Trie("abc")
+    assert trie.pattern() == "abc"
+    assert (
+        trie + Trie().add("foo")
+        == Trie("abc", "foo")
+        == Trie(["abc", "foo"])
+        == Trie().add(["abc", "foo"])
+        == Trie().add("abc", "foo")
+        == Trie().add("abc").add("foo")
+    )
