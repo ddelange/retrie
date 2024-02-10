@@ -89,7 +89,9 @@ class Trie:
         """Merge another Trie object into the current Trie."""
         if not isinstance(other, Trie):
             raise TypeError(
-                f"Unsupported operand type(s) for +=: '{type(self)}' and '{type(other)}'"
+                "Unsupported operand type(s) for +=: '{0}' and '{1}'".format(
+                    type(self), type(other)
+                )
             )
         return self + other
 
