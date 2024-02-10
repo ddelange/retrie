@@ -20,7 +20,7 @@ Standalone usage:
     assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
 """
 import re
-from typing import Dict, Optional, Text  # noqa:F401
+from typing import Any, Dict, Optional, Text  # noqa:F401
 
 data_type = Dict[Text, Dict]
 
@@ -41,6 +41,14 @@ class Trie:
         """Initialize data dictionary."""
         self.data = {}  # type: data_type
         self.add(*word)
+
+    def __eq__(
+        self, other  # type: Any
+    ):  # type: (...) -> bool
+        """Compare two Trie objects."""
+        if not isinstance(other, Trie):
+            return False
+        return self.data == other.data
 
     def add(
         self, *word  # type: Text
