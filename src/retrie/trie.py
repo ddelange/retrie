@@ -87,7 +87,7 @@ class Trie:
         other,  # type: "Trie"
     ):  # type: (...) -> "Trie"
         """Merge another Trie object into the current Trie."""
-        if not isinstance(other, Trie):
+        if self.__class__ != other.__class__:
             raise TypeError(
                 "Unsupported operand type(s) for +=: '{0}' and '{1}'".format(
                     type(self), type(other)
