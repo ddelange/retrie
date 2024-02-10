@@ -1,3 +1,5 @@
+import pytest
+
 from retrie.trie import Trie
 
 
@@ -29,22 +31,16 @@ def test_trie():
     assert (
         trie + Trie().add("foo")
         == Trie("abc", "foo")
+        == Trie("abc") + Trie("foo")
+        == Trie("foo") + Trie("abc")
         == Trie(["abc", "foo"])
         == Trie().add(["abc", "foo"])
         == Trie().add("abc", "foo")
         == Trie().add("abc").add("foo")
     )
-
-    try:
-        trie + None
-    except TypeError:
-        pass
-    else:
-        assert False, "TypeError not raised"
-
-    try:
+    assert Trie("a", "b", "c").pattern() == "[abc]"
+    assert Trie() + Trie() == Trie()
+    assert Trie("abs") + Trie("absolute") != Trie("absolute")
+    assert trie != object
+    with pytest.raises(TypeError):
         trie += None
-    except TypeError:
-        pass
-    else:
-        assert False, "TypeError not raised"
