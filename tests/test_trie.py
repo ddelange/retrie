@@ -34,3 +34,17 @@ def test_trie():
         == Trie().add("abc", "foo")
         == Trie().add("abc").add("foo")
     )
+
+    try:
+        trie + None
+    except TypeError:
+        pass
+    else:
+        assert False, "TypeError not raised"
+
+    try:
+        trie += None
+    except TypeError:
+        pass
+    else:
+        assert False, "TypeError not raised"
