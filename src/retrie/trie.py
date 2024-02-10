@@ -44,7 +44,7 @@ class Trie:
 
     def add(
         self, *word  # type: Text
-    ):
+    ):  # type: (...) -> "Trie"
         """Add one or more words to the current Trie."""
         if len(word) == 1 and not isinstance(word[0], str):
             word = word[0]
@@ -55,6 +55,7 @@ class Trie:
                 ref[char] = ref.get(char, {})
                 ref = ref[char]
             ref[""] = {}
+        return self
 
     def dump(self):  # type: (...) -> data_type
         """Dump the current trie as dictionary."""
