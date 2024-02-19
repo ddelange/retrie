@@ -37,18 +37,16 @@ jobs:
     - name: Pip cache
       uses: actions/cache@v4
       with:
+        save-always: true
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements/*.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
 
     - name: Pre-commit cache
       uses: actions/cache@v4
       with:
+        save-always: true
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit-${{ matrix.python-version }}-${{ hashFiles('**/requirements/ci.txt') }}-${{ hashFiles('.pre-commit-config.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pre-commit-
 
     - name: Install dependencies
       run: |
