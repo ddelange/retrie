@@ -19,9 +19,9 @@ Standalone usage:
     trie.add("abxy")
     assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
 
-A Trie may be populated with single or multiple iterables of strings at instantiation or
-via `.add`, from which method chaining is possible. Two Trie may be merged with the `+`
-and `+=` operators and will compare equal if their data dictionaries are equal.
+A Trie may be populated with zero or more strings at instantiation or via `.add`, from
+which method chaining is possible. Two Trie may be merged with the `+` and `+=`
+operators and will compare equal if their data dictionaries are equal.
 ::
 
     trie = Trie()
@@ -29,8 +29,8 @@ and `+=` operators and will compare equal if their data dictionaries are equal.
     assert (
         trie + Trie().add("foo")
         == Trie("abc", "foo")
-        == Trie(["abc", "foo"])
-        == Trie().add(["abc", "foo"])
+        == Trie(*["abc", "foo"])
+        == Trie().add(*["abc", "foo"])
         == Trie().add("abc", "foo")
         == Trie().add("abc").add("foo")
     )
@@ -85,29 +85,19 @@ class Trie:
                     type(self), type(other)
                 )
             )
-        self._merge(other)
+        self._merge_subtrie(self.data, other.data)
         return self
 
-    def _merge(
-        self,
-        other,  # type: "Trie"
-    ):  # type: (...) -> None
-        """Merge two Trie data."""
-        for key, value in other.data.items():
-            if key in self.data:
-                self._merge_subtrie(self.data[key], value)
-            else:
-                self.data[key] = value
-
+    @classmethod
     def _merge_subtrie(
-        self,
+        cls,
         current_subtrie,  # type: data_type
         other_subtrie,  # type: data_type
     ):  # type: (...) -> None
         """Recursively merge subtrie data."""
         for key, value in other_subtrie.items():
             if key in current_subtrie:
-                self._merge_subtrie(current_subtrie[key], value)
+                cls._merge_subtrie(current_subtrie[key], value)
             else:
                 current_subtrie[key] = value
 
@@ -115,9 +105,6 @@ class Trie:
         self, *word  # type: Text
     ):  # type: (...) -> "Trie"
         """Add one or more words to the current Trie."""
-        if len(word) == 1 and not isinstance(word[0], str):
-            word = word[0]
-
         for word in word:
             ref = self.data
             for char in word:
