@@ -63,9 +63,7 @@ class Trie:
         self, other  # type: Any
     ):  # type: (...) -> bool
         """Compare two Trie objects."""
-        if not isinstance(other, Trie):
-            return False
-        return self.data == other.data
+        return self.__class__ == other.__class__ and self.data == other.data
 
     def __add__(
         self, other  # type: "Trie"
