@@ -45,3 +45,9 @@ def test_trie():
     assert Trie() + Trie() == Trie()
     assert Trie("a", "b", "c").pattern() == "[abc]"
     assert Trie("abs") + Trie("absolute") != Trie("absolute")
+
+    trie1, trie2 = Trie(), Trie("abc")
+    trie1 += trie2
+    assert trie1.data["a"] is not trie2.data["a"]
+    trie2.data["a"]["b"] = {"s": {"": {}}}
+    assert trie1 != trie2
