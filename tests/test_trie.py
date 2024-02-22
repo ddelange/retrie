@@ -38,9 +38,10 @@ def test_trie():
         == Trie().add("abc", "foo")
         == Trie().add("abc").add("foo")
     )
-    assert Trie("a", "b", "c").pattern() == "[abc]"
-    assert Trie() + Trie() == Trie()
-    assert Trie("abs") + Trie("absolute") != Trie("absolute")
     assert trie != object
     with pytest.raises(TypeError):
         trie += None
+
+    assert Trie() + Trie() == Trie()
+    assert Trie("a", "b", "c").pattern() == "[abc]"
+    assert Trie("abs") + Trie("absolute") != Trie("absolute")
