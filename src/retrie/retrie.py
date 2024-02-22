@@ -139,7 +139,11 @@ class Retrie:
         cls,
         re_flags,  # type: re_flag_type
     ):  # type: (...) -> int
-        """Convert re_flags to integer."""
+        """Convert re_flags to integer.
+
+        Args:
+            re_flags (re.RegexFlag | int | None): The flags to cast to integer.
+        """
         return int(re_flags) if re_flags else 0
 
     def pattern(self):  # type: (...) -> Text
@@ -208,7 +212,8 @@ class Checklist(Retrie):
 
         Retrie.__init__(self, word_boundary=word_boundary, re_flags=re_flags)
 
-        self.trie.add(*keys)
+        for key in keys:  # lazy exhaust in case keys is a huge generator
+            self.trie.add(key)
 
     @cached_property
     def compiled(self):  # type: (...) -> Pattern[Text]
@@ -218,13 +223,21 @@ class Checklist(Retrie):
     def is_listed(
         self, term  # type: Text
     ):  # type: (...) -> bool
-        """Return True if Pattern is found in term."""
+        """Return True if Pattern is found in term.
+
+        Args:
+            term (str): The string to search.
+        """
         return bool(self.compiled.search(term))
 
     def not_listed(
         self, term  # type: Text
     ):  # type: (...) -> bool
-        """Return True if Pattern is not found in term."""
+        """Return True if Pattern is not found in term.
+
+        Args:
+            term (str): The string to search.
+        """
         return not self.is_listed(term)
 
 
@@ -260,20 +273,32 @@ class Blacklist(Checklist):
     def is_blacklisted(
         self, term  # type: Text
     ):  # type: (...) -> bool
-        """Return True if Pattern is found in term."""
+        """Return True if Pattern is found in term.
+
+        Args:
+            term (str): The string to search.
+        """
         return self.is_listed(term)
 
     def filter(  # noqa:A003
         self,
         sequence,  # type: Sequence[Text]
     ):  # type: (...) -> Iterator[Text]
-        """Construct an iterator from those elements of sequence not blacklisted."""
+        """Construct an iterator from those elements of sequence not blacklisted.
+
+        Args:
+            sequence (Sequence): The sequence of strings to filter.
+        """
         return filter(self.not_listed, sequence)
 
     def cleanse_text(
         self, term  # type: Text
     ):  # type: (...) -> Text
-        """Return text, removing all blacklisted terms."""
+        """Return text, removing all blacklisted terms.
+
+        Args:
+            term (str): The string to search.
+        """
         return self.compiled.sub("", term)
 
 
@@ -309,20 +334,32 @@ class Whitelist(Checklist):
     def is_whitelisted(
         self, term  # type: Text
     ):  # type: (...) -> bool
-        """Return True if Pattern is found in term."""
+        """Return True if Pattern is found in term.
+
+        Args:
+            term (str): The string to search.
+        """
         return self.is_listed(term)
 
     def filter(  # noqa:A003
         self,
         sequence,  # type: Sequence[Text]
     ):  # type: (...) -> Iterator[Text]
-        """Construct an iterator from whitelisted elements of sequence."""
+        """Construct an iterator from whitelisted elements of sequence.
+
+        Args:
+            sequence (Sequence): The sequence of strings to filter.
+        """
         return filter(self.is_listed, sequence)
 
     def cleanse_text(
         self, term  # type: Text
     ):  # type: (...) -> Text
-        """Return text, only keeping whitelisted terms."""
+        """Return text, only keeping whitelisted terms.
+
+        Args:
+            term (str): The string to search.
+        """
         return "".join(self.compiled.findall(term))
 
 

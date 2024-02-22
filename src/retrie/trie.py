@@ -19,9 +19,9 @@ Standalone usage:
     trie.add("abxy")
     assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
 
-A Trie may be populated with zero or more strings at instantiation or via `.add`, from
-which method chaining is possible. Two Trie may be merged with the `+` and `+=`
-operators and will compare equal if their data dictionaries are equal.
+A :class:`Trie` may be populated with zero or more strings at instantiation or via :meth:`Trie.add`, from
+which method chaining is possible. Two instances can be merged with the ``+`` (new instance) and
+``+=`` (in-place update) operators. Instances will compare equal if their data dictionaries are equal.
 ::
 
     trie = Trie()
@@ -44,11 +44,17 @@ data_type = Dict[Text, Dict]
 
 
 class Trie:
-    """Create a Trie for a sequence of strings.
+    """Create a Trie with zero or more words at instantiation or (later via :meth:`Trie.add`).
 
-    The Trie can be exported to a Regex pattern, which should match much faster than a
-    simple Regex union.
+    The Trie can be exported to a Regex pattern via :meth:`Trie.pattern`, which should match
+    much faster than a simple Regex union. For best performance, pass the pattern to :func:`re.compile`
+    and cache it to avoid recompiling for every search. See also :attr:`retrie.retrie.Checklist.compiled`.
 
+    Two instances can be merged with the ``+`` (new instance) and ``+=`` (in-place update) operators.
+    Instances will compare equal if their data dictionaries are equal.
+
+    Args:
+        word (str): A string to add to the Trie.
     """
 
     __slots__ = "data"
@@ -105,7 +111,11 @@ class Trie:
     def add(
         self, *word  # type: Text
     ):  # type: (...) -> "Trie"
-        """Add one or more words to the current Trie."""
+        """Add one or more words to the current Trie.
+
+        Args:
+            word (str): A string to add to the Trie.
+        """
         for word in word:
             ref = self.data
             for char in word:
