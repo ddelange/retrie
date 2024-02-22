@@ -37,6 +37,7 @@ operators and will compare equal if their data dictionaries are equal.
 """
 
 import re
+from copy import deepcopy
 from typing import Any, Dict, Optional, Text  # noqa:F401
 
 data_type = Dict[Text, Dict]
@@ -85,7 +86,7 @@ class Trie:
                     type(self), type(other)
                 )
             )
-        self._merge_subtrie(self.data, other.data)
+        self._merge_subtrie(self.data, deepcopy(other.data))
         return self
 
     @classmethod
