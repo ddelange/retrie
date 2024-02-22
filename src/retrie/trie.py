@@ -18,9 +18,27 @@ Standalone usage:
 
     trie.add("abxy")
     assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
+
+A Trie may be populated with zero or more strings at instantiation or via `.add`, from
+which method chaining is possible. Two Trie may be merged with the `+` and `+=`
+operators and will compare equal if their data dictionaries are equal.
+::
+
+    trie = Trie()
+    trie += Trie("abc")
+    assert (
+        trie + Trie().add("foo")
+        == Trie("abc", "foo")
+        == Trie(*["abc", "foo"])
+        == Trie().add(*["abc", "foo"])
+        == Trie().add("abc", "foo")
+        == Trie().add("abc").add("foo")
+    )
 """
+
 import re
-from typing import Dict, Optional, Text  # noqa:F401
+from copy import deepcopy
+from typing import Any, Dict, Optional, Text  # noqa:F401
 
 data_type = Dict[Text, Dict]
 
@@ -35,13 +53,58 @@ class Trie:
 
     __slots__ = "data"
 
-    def __init__(self):
+    def __init__(
+        self, *word  # type: Text
+    ):
         """Initialize data dictionary."""
         self.data = {}  # type: data_type
+        self.add(*word)
+
+    def __eq__(
+        self, other  # type: Any
+    ):  # type: (...) -> bool
+        """Compare two Trie objects."""
+        return self.__class__ == other.__class__ and self.data == other.data
+
+    def __add__(
+        self, other  # type: "Trie"
+    ):  # type: (...) -> "Trie"
+        """Merge two Trie objects."""
+        new_trie = Trie()
+        new_trie += self
+        new_trie += other
+        return new_trie
+
+    def __iadd__(
+        self,
+        other,  # type: "Trie"
+    ):  # type: (...) -> "Trie"
+        """Merge another Trie object into the current Trie."""
+        if self.__class__ != other.__class__:
+            raise TypeError(
+                "Unsupported operand type(s) for +=: '{0}' and '{1}'".format(
+                    type(self), type(other)
+                )
+            )
+        self._merge_subtrie(self.data, deepcopy(other.data))
+        return self
+
+    @classmethod
+    def _merge_subtrie(
+        cls,
+        current_subtrie,  # type: data_type
+        other_subtrie,  # type: data_type
+    ):  # type: (...) -> None
+        """Recursively merge subtrie data."""
+        for key, value in other_subtrie.items():
+            if key in current_subtrie:
+                cls._merge_subtrie(current_subtrie[key], value)
+            else:
+                current_subtrie[key] = value
 
     def add(
         self, *word  # type: Text
-    ):
+    ):  # type: (...) -> "Trie"
         """Add one or more words to the current Trie."""
         for word in word:
             ref = self.data
@@ -49,6 +112,7 @@ class Trie:
                 ref[char] = ref.get(char, {})
                 ref = ref[char]
             ref[""] = {}
+        return self
 
     def dump(self):  # type: (...) -> data_type
         """Dump the current trie as dictionary."""
