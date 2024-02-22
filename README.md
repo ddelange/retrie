@@ -33,19 +33,19 @@ trie.add("abxy")
 assert trie.pattern() == "(?:ab(?:c|s(?:olute)?|xy?)|foo)"
 ```
 
-A Trie may be populated with zero or more strings at instantiation or via `.add`, from which method chaining is possible. Two Trie may be merged with the `+` and `+=` operators and will compare equal if their data dictionaries are equal.
+A `Trie` may be populated with zero or more strings at instantiation or via `Trie.add`, from which method chaining is possible. Two instances can be merged with the `+` (new instance) and `+=` (in-place update) operators. Instances will compare equal if their data dictionaries are equal.
 
 ```py
-    trie = Trie()
-    trie += Trie("abc")
-    assert (
-        trie + Trie().add("foo")
-        == Trie("abc", "foo")
-        == Trie(*["abc", "foo"])
-        == Trie().add(*["abc", "foo"])
-        == Trie().add("abc", "foo")
-        == Trie().add("abc").add("foo")
-    )
+trie = Trie()
+trie += Trie("abc")
+assert (
+    trie + Trie().add("foo")
+    == Trie("abc", "foo")
+    == Trie(*["abc", "foo"])
+    == Trie().add(*["abc", "foo"])
+    == Trie().add("abc", "foo")
+    == Trie().add("abc").add("foo")
+)
 ```
 
 
