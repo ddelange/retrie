@@ -50,6 +50,18 @@ jobs:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit-${{ matrix.python-version }}-${{ hashFiles('**/requirements/ci.txt') }}-${{ hashFiles('.pre-commit-config.yaml') }}
 
+    - name: Expose github environment as shell variables
+      env:
+        SECRETS_CONTEXT: ${{ toJson(secrets) }}
+        VARS_CONTEXT: ${{ toJson(vars) }}
+      run: |
+        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
+        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        to_envs() { jq -r "to_entries[] | \"\(.key)<<$EOF\n\(.value)\n$EOF\n\""; }
+        echo "$VARS_CONTEXT" | to_envs >> $GITHUB_ENV
+        echo "$SECRETS_CONTEXT" | to_envs >> $GITHUB_ENV
+
     - name: Install dependencies
       run: |
         pip install -U pip setuptools wheel
