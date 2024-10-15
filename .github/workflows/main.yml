@@ -61,7 +61,7 @@ jobs:
         to_envs() { jq -r "( . // {} ) | to_entries[] | \"\(.key)<<$EOF\n\(.value)\n$EOF\n\""; }
         echo "$VARS_CONTEXT" | to_envs >> $GITHUB_ENV
         echo "$SECRETS_CONTEXT" | to_envs >> $GITHUB_ENV
-        env
+    - run: env
 
     - name: Install dependencies
       run: |
