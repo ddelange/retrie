@@ -52,8 +52,8 @@ jobs:
 
     - name: Expose github environment as shell variables
       env:
-        SECRETS_CONTEXT: ${{ toJson(secrets) }}
-        VARS_CONTEXT: ${{ toJson(vars) }}
+        SECRETS_CONTEXT: ${{ toJson(secrets) || {} }}
+        VARS_CONTEXT: ${{ toJson(vars) || {} }}
       run: |
         # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
         # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
