@@ -66,7 +66,7 @@ jobs:
       if: matrix.python-version == 3.12
       run: SPHINXOPTS=-W make builddocs
 
-    - uses: codecov/codecov-action@v4
+    - uses: codecov/codecov-action@v5
       with:
         fail_ci_if_error: true
         use_oidc: true
@@ -97,13 +97,13 @@ jobs:
         python setup.py sdist bdist_wheel --universal
 
     - name: Upload release assets
-      uses: softprops/action-gh-release@v2.0.9
+      uses: softprops/action-gh-release@v2.1.0
       with:
         files: dist/*
 
     # https://github.com/pypa/gh-action-pypi-publish#trusted-publishing
     - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@v1.11.0
+      uses: pypa/gh-action-pypi-publish@v1.12.2
 
     - uses: apexskier/github-release-commenter@v1
       with:
