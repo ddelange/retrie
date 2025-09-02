@@ -17,7 +17,7 @@ jobs:
       matrix:
         python-version: ['2.7', '3.x']
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
@@ -82,7 +82,7 @@ jobs:
       pull-requests: write # apexskier/github-release-commenter
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
