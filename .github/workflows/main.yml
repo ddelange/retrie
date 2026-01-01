@@ -37,14 +37,14 @@ jobs:
         sudo ln -sf "$(which python2.7)" "$(dirname $(which python2.7))/python"
 
     - name: Pip cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         save-always: true
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements/*.txt') }}
 
     - name: Pre-commit cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         save-always: true
         path: ~/.cache/pre-commit
