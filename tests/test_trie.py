@@ -38,7 +38,7 @@ def test_trie():
         == Trie().add("abc", "foo")
         == Trie().add("abc").add("foo")
     )
-    assert trie != object
+    assert trie != object  # noqa: E721 comparing against a type is the point here
     with pytest.raises(TypeError):
         trie += None
 

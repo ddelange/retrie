@@ -75,6 +75,7 @@ The :class:`Replacer` class does a fast single-pass search & replace for occurre
     # re.compile(r'(?<= )(?:ab[cs]|foo)(?= )', re.IGNORECASE|re.UNICODE)
     assert replacer.replace(". ABS ...foo... foobar") == ". new3 ...foo... foobar"
 """
+
 import re
 from typing import (  # noqa:F401
     Any,

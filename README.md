@@ -21,7 +21,9 @@ from retrie.trie import Trie
 trie = Trie()
 
 trie.add("abc", "foo", "abs")
-assert trie.pattern() == "(?:ab[cs]|foo)"  # equivalent to but faster than "(?:abc|abs|foo)"
+assert (
+    trie.pattern() == "(?:ab[cs]|foo)"
+)  # equivalent to but faster than "(?:abc|abs|foo)"
 
 trie.add("absolute")
 assert trie.pattern() == "(?:ab(?:c|s(?:olute)?)|foo)"
