@@ -116,9 +116,9 @@ class Trie:
         Args:
             word (str): A string to add to the Trie.
         """
-        for word in word:
+        for w in word:
             ref = self.data
-            for char in word:
+            for char in w:
                 ref[char] = ref.get(char, {})
                 ref = ref[char]
             ref[""] = {}
